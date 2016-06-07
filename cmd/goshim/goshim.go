@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	"github.com/Songmu/goshim"
+	"github.com/pacificporter/goshim"
 )
 
 func main() {
-	os.Exit(goshim.Run(os.Args[1:]))
+	os.Exit(goshim.RunWithFlag())
 }

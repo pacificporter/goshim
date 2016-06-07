@@ -2,12 +2,12 @@ package goshim
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"runtime"
 	"strings"
 	"syscall"
@@ -20,22 +20,31 @@ const version = "0.0.1"
 
 func printUsage() {
 	fmt.Fprintf(os.Stderr, `Usage:
-  goshim ./path/to/pkg [args...]
+  goshim [-fhv] ./path/to/pkg [args...]
 
 Verion: %s
 
 Better `+"`go run`"+`. Build go codes transparently and exec
+
 `, version)
+	flag.PrintDefaults()
 }
 
 var (
-	helpReg  = regexp.MustCompile(`^--?h(?:elp)?$`)
-	execFunc = syscall.Exec
+	helpFlag    = flag.Bool("h", false, "help")
+	forceFlag   = flag.Bool("f", false, "force rebuild")
+	verboseFlag = flag.Bool("v", false, "output verbosely")
+	execFunc    = syscall.Exec
 )
+
+func RunWithFlag() int {
+	flag.Parse()
+	return Run(flag.Args())
+}
 
 // Run the goshim
 func Run(args []string) int {
-	if len(args) < 1 || (len(args) == 1 && helpReg.MatchString(args[0])) {
+	if len(args) < 1 || *helpFlag {
 		printUsage()
 		return 1
 	}
@@ -54,11 +63,18 @@ func Run(args []string) int {
 		return 1
 	}
 	dst := binDst(srcdir)
-	if isRebuildRequired(srcdir, dst, list) {
+	if *forceFlag || isRebuildRequired(srcdir, dst, list) {
+		if *verboseFlag {
+			fmt.Fprintf(os.Stderr, "Rebuild\n\n")
+		}
 		err := build(srcdir, dst)
 		if err != nil {
 			log.Fatal(err)
 			return 1
+		}
+	} else {
+		if *verboseFlag {
+			fmt.Fprintf(os.Stderr, "Use a cache\n\n")
 		}
 	}
 	err = execFunc(dst, append([]string{dst}, args[1:]...), os.Environ())
