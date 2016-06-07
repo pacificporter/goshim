@@ -7,5 +7,5 @@ import (
 )
 
 func main() {
-	os.Exit(goshim.Run(os.Args[1:]))
+	os.Exit(goshim.RunWithFlag())
 }
