@@ -25,8 +25,8 @@ func printUsage() {
 Verion: %s
 
 Better `+"`go run`"+`. Build go codes transparently and exec
+
 `, version)
-	fmt.Println()
 	flag.PrintDefaults()
 }
 
@@ -65,7 +65,7 @@ func Run(args []string) int {
 	dst := binDst(srcdir)
 	if *forceFlag || isRebuildRequired(srcdir, dst, list) {
 		if *verboseFlag {
-			fmt.Printf("rebuild\n\n")
+			fmt.Fprintf(os.Stderr, "Rebuild\n\n")
 		}
 		err := build(srcdir, dst)
 		if err != nil {
@@ -74,7 +74,7 @@ func Run(args []string) int {
 		}
 	} else {
 		if *verboseFlag {
-			fmt.Printf("use cache\n\n")
+			fmt.Fprintf(os.Stderr, "Use a cache\n\n")
 		}
 	}
 	err = execFunc(dst, append([]string{dst}, args[1:]...), os.Environ())
