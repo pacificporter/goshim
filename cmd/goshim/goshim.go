@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/Songmu/goshim"
+	"github.com/pacificporter/goshim"
 )
 
 func main() {
