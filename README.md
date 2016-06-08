@@ -31,7 +31,7 @@ Better `go run`. Build go codes transparently and exec
 
 ## License
 
-[MIT][license]
+MIT License
 
 ## Author
 
